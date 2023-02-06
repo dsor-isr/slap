@@ -22,7 +22,9 @@ node_frequency: 10
 Veh_ID: 0
 adj_matrix: [0, 1, 
              1, 0]
-state_offset: [4290797.543,  491941.239 , 0.0, 0.0] 
+# state_offset: [4290797.543,  491941.239 , 0.0, 0.0]   #old
+state_offset: [4290807.543,  491936.239 , 0.0, 0.0]   #new
+
 ini_target_state: [ 10.0,   -5.0,    0.0,    0.0 ]
 ini_target_cov:   [ 10.0,   0.0,    0.0,    0.0, 
                     0.0,   10.0,    0.0,    0.0,

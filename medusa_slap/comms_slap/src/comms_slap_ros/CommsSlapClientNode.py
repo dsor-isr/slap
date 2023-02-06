@@ -97,7 +97,7 @@ class CommsSlapClientNode():
 			print('Client with ID ' + str(self.Veh_ID) + ' received its first position to broadcast')	
 		# +.+ Build the message
 		data = b"$POS,%02i,%06.4f,%06.4f,%06.4f,\
-		                  %06.4f,%06.4f,%06.4f\n" % (self.Veh_ID, msg.position.north, msg.position.east, msg.altitude,
+		                  %06.4f,%06.4f,%06.4f\n" % (self.Veh_ID, msg.position.north, msg.position.east, msg.position.depth,
 						  										  msg.body_velocity.x*math.cos(msg.orientation.z*math.pi/180.0),
 																  msg.body_velocity.x*math.sin(msg.orientation.z*math.pi/180.0),
 																  0.0)																	

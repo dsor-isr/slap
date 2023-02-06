@@ -74,8 +74,8 @@
 
  	void timerIterCallback(const ros::TimerEvent& event);
 
-	Eigen::Vector2d vehicle_position_; 
-	Eigen::Vector2d target_position_;
+	Eigen::Vector3d vehicle_position_; 
+	Eigen::Vector3d target_position_;
 	double target_depth_;
 	
     /* Simulate Gaussian random noise */
