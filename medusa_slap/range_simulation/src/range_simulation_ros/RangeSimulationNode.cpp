@@ -76,7 +76,7 @@
  double RangeSimulationNode::nodeFrequency()
  {
  	double node_frequency;
- 	nh_p_.param("node_frequency", node_frequency, 0.66);
+ 	nh_.param("node_frequency", node_frequency, 0.66);
  	ROS_INFO("Node will run at : %lf [hz]", node_frequency);
  	return node_frequency;
  }
@@ -112,6 +112,8 @@
 		// ID from 100 is used for targets
 		target_position_[0] = msg.position[0];
 		target_position_[1] = msg.position[1]; 
+		target_position_[2] = msg.position[2]; 
+
 	}
  }
  void RangeSimulationNode::vehicleStateCallback(const auv_msgs::NavigationStatus &msg) {
@@ -121,7 +123,7 @@
 		ROS_INFO("range simulation node has received the first vehicle state"); 	
 
 	}
-	vehicle_position_ << msg.position.north, msg.position.east;
+	vehicle_position_ << msg.position.north, msg.position.east, msg.position.depth ;
  }
 
 
@@ -134,9 +136,8 @@
 	 	
 	if (!received_target_position ||  !received_vehicle_state)
 	return;
+	double simulated_range_  = 	(vehicle_position_ - target_position_).norm() + 0.1*dist(generator);
 
-	double tem = (vehicle_position_ - target_position_).norm(); 
-	double simulated_range_  = sqrt(tem*tem + target_depth_*target_depth_) + 0.1*dist(generator);
 	// simulate outlier
 		if (dist(generator) > 140*stddev){
 			simulated_range_=+ 500+100*dist(generator);			// just add a crazy number to the range
@@ -144,6 +145,7 @@
 	farol_msgs::mUSBLFix msg;
 	msg.range = simulated_range_;
 	msg.type = 0;
+	ROS_INFO("depth difference is: %f", vehicle_position_[2] - target_position_[2]);
 	ROS_INFO("Range to the target is: %f", simulated_range_);
 	target_range_pub_.publish(msg); 
 
