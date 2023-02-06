@@ -1,0 +1,2 @@
+# slap
+SLAP algorithm standalone
