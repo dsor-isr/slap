@@ -1,0 +1,25 @@
+node_frequency: 10
+# topics:
+#   subscribers:
+#     internal_gamma: "/slap/internal/gamma"
+#     neighbor_gamma: "/slap/neighbor/gamma"
+#   publishers:
+#     vc: "/slap/internal/vc"
+#     to_neighbor_gamma: "/slap/gamma_to_neighbor"
+#     cpf_etc_info: "/slap/cpf/etc_info"
+#   services:
+#     start_cooperative_control: "/slap/start_cooperative_control"
+#     stop_cooperative_control: "/slap/stop_cooperative_control"  
+#     cooperative_control_gain: "/slap/cooperative_control_gain"  
+#     set_ETC_parameter: "/slap/cpf/set_ETC_parameter"
+
+
+kc: 0.1
+Veh_ID: 0
+adj_matrix: [0, 1, 
+             1, 0]
+
+# threshold function of ETC is: g = c0 + c1e^(-c2*t)
+c0: 0.03
+c1: 0.02
+c2: 0.1

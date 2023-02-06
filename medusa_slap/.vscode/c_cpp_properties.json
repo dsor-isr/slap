@@ -1,0 +1,59 @@
+{
+  "configurations": [
+    {
+      "browse": {
+        "databaseFilename": "",
+        "limitSymbolsToIncludedHeaders": true
+      },
+      "includePath": [
+        "/home/hung/catkin_ws/devel/include/**",
+        "/opt/ros/melodic/include/**",
+        "/home/hung/catkin_ws/src/medusa_vx/medusa_drivers/gps/ashtech_asio/include/**",
+        "/home/hung/catkin_ws/src/medusa_vx/medusa_drivers/bms/bat_monit/include/**",
+        "/home/hung/catkin_ws/src/medusa_vx/medusa_comms/comms_acoustic/tools/comms_state_broadcaster/include/**",
+        "/home/hung/catkin_ws/src/medusa_vx/medusa_addons/console_path_parser/include/**",
+        "/home/hung/catkin_ws/src/medusa_vx/medusa_slap/cooperative_control/include/**",
+        "/home/hung/catkin_ws/src/medusa_vx/medusa_control/outer_loops_controllers/cpf_control/include/**",
+        "/home/hung/catkin_ws/src/medusa_vx/medusa_slap/dekf/include/**",
+        "/home/hung/catkin_ws/src/medusa_vx/medusa_drivers/bluetooth/dsor_bluetooth/include/**",
+        "/home/hung/catkin_ws/src/medusa_vx/medusa_drivers/depth_cell/dsor_depth_cell/include/**",
+        "/home/hung/catkin_ws/src/medusa_vx/medusa_planning/dsor_paths/include/**",
+        "/home/hung/catkin_ws/src/medusa_vx/medusa_comms/comms_acoustic/tools/evo_tools/include/**",
+        "/home/hung/catkin_ws/src/medusa_vx/medusa_drivers/ims/include/**",
+        "/home/hung/catkin_ws/src/medusa_vx/medusa_control/inner_loops_controllers/inner_loops_forces/include/**",
+        "/home/hung/catkin_ws/src/medusa_vx/medusa_control/inner_loops_controllers/inner_loops_vx/include/**",
+        "/home/hung/catkin_ws/src/medusa_vx/medusa_drivers/inside_pressure/include/**",
+        "/home/hung/catkin_ws/src/medusa_vx/medusa_comms/comms_acoustic/interrogation_scheme/include/**",
+        "/home/hung/catkin_ws/src/medusa_vx/medusa_drivers/altimeter/isa500/include/**",
+        "/home/hung/catkin_ws/src/medusa_vx/medusa_drivers/depth_cell/isd4000_depth_cell/include/**",
+        "/home/hung/catkin_ws/src/medusa_vx/medusa_drivers/leak_detector/leak/include/**",
+        "/home/hung/catkin_ws/src/medusa_vx/medusa_drivers/magnetometer/marine_magnetics_explorer/include/**",
+        "/home/hung/catkin_ws/src/medusa_vx/medusa_addons/libraries/medusa_diagnostics_library/include/**",
+        "/home/hung/catkin_ws/src/medusa_vx/medusa_addons/libraries/medusa_gimmicks_library/include/**",
+        "/home/hung/catkin_ws/src/medusa_vx/medusa_drivers/altimeter/micron/include/**",
+        "/home/hung/catkin_ws/src/medusa_vx/medusa_nav/nav_tools/include/**",
+        "/home/hung/catkin_ws/src/medusa_vx/medusa_drivers/dvls/nortek_dvl500/include/**",
+        "/home/hung/catkin_ws/src/medusa_vx/medusa_drivers/optical_modem/include/**",
+        "/home/hung/catkin_ws/src/medusa_vx/medusa_control/outer_loops_controllers/path_following/include/**",
+        "/home/hung/catkin_ws/src/medusa_vx/medusa_slap/range_simulation/include/**",
+        "/home/hung/catkin_ws/src/3rdParty/rosparam_handler/include/**",
+        "/home/hung/catkin_ws/src/medusa_vx/medusa_drivers/thrusters/seabotix_duo/include/**",
+        "/home/hung/catkin_ws/src/medusa_vx/medusa_drivers/thrusters/seabotix_solo/include/**",
+        "/home/hung/catkin_ws/src/medusa_vx/medusa_nav/sensor_fusion/include/**",
+        "/home/hung/catkin_ws/src/medusa_vx/medusa_sim/sensor_sim/include/**",
+        "/home/hung/catkin_ws/src/medusa_vx/medusa_addons/libraries/serial/include/**",
+        "/home/hung/catkin_ws/src/medusa_vx/medusa_addons/libraries/serial_lib/include/**",
+        "/home/hung/catkin_ws/src/medusa_vx/medusa_addons/libraries/serial_port/include/**",
+        "/home/hung/catkin_ws/src/medusa_vx/medusa_addons/status_aggregator/include/**",
+        "/home/hung/catkin_ws/src/medusa_vx/medusa_slap/tracking_control/include/**",
+        "/home/hung/catkin_ws/src/medusa_vx/medusa_slap/trajectory_planning/include/**",
+        "/home/hung/catkin_ws/src/medusa_vx/medusa_drivers/thrusters/vesc/vesc_driver/include/**",
+        "/home/hung/catkin_ws/src/medusa_vx/medusa_drivers/imu/vn100_imu/include/**",
+        "/home/hung/catkin_ws/src/medusa_vx/medusa_control/outer_loops_controllers/waypoint_vx/include/**",
+        "/usr/include/**"
+      ],
+      "name": "ROS"
+    }
+  ],
+  "version": 4
+}

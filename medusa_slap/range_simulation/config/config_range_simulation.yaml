@@ -1,0 +1,7 @@
+node_frequency: 0.66
+# topics:
+#   subscribers:
+#     neighbor_pos: "/slap/neighbor/position"
+#     vehicle_state: "/nav/filter/state"
+#   publishers:
+#     target_range:  "/sensors/usbl_fix"

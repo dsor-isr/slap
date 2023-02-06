@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<launch>
+
+ <!-- Launch the node -->
+ <node pkg="comms_slap" type="comms_slap_client_node" name="CommsClientSlapNode" respawn="false" output="screen">
+	<rosparam command="load" file="$(find comms_slap)/config/config_comms_slap.yaml"/>
+</node>
+
+ <node pkg="comms_slap" type="comms_slap_server_node" name="CommsServerSlapNode" respawn="false" output="screen">
+	<rosparam command="load" file="$(find comms_slap)/config/config_comms_slap.yaml"/>
+</node>
+
+</launch>

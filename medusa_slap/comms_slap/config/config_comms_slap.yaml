@@ -1,0 +1,13 @@
+node_frequency: 10
+broadcast_port: 2808
+broadcast_address: "127.0.0.1"
+# topics:
+#   subscribers:
+#     gamma_to_neighbor: "/slap/gamma_to_neighbor"
+#     pdf_to_neighbor: "/slap/internal/target/pdf_to_neighbor"
+#     vehicle_state: "/nav/filter/state"
+#   publishers:
+#     neighbor_gamma: "/slap/neighbor/gamma"
+#     neighbor_target_pdf: "/slap/neighbor/target/pdf"
+#     neighbor_pos: "/slap/neighbor/position"
+Veh_ID: 0

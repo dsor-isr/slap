@@ -1,0 +1,6 @@
+#!/usr/bin/env python
+
+import comms_slap_ros.CommsSlapServerNode
+
+if __name__ == '__main__':
+ comms_slap_ros.CommsSlapServerNode.main()

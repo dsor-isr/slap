@@ -1,0 +1,4 @@
+float64 desired_distance                    # in meter
+float64 desired_angular_rate                # in rad/s
+---
+bool success

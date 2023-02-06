@@ -1,0 +1,21 @@
+node_frequency: 10
+# topics:
+#   subscribers:
+#     vehicle_state: "/nav/filter/state"
+#     vc: "/slap/internal/vc"
+#     st_curve: "/slap/st_curve"
+#     flag: "/Flag"
+#   publishers:
+#     surge: "/ref/surge"
+#     yaw_rate: "/ref/yaw_rate"
+#     gamma_dot: "/slap/internal/gamma_dot"
+#   services:
+#     start_tracking: "/slap/start_tracking"
+#     stop_tracking: "/slap/stop_tracking"
+#     set_tc_gains: "/slap/set_tc_gains"
+
+# gains of the tracking controller
+delta: -1
+kx: 0.4
+ky: 0.2
+kz: 0.4

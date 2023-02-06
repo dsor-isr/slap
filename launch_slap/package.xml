@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<package format="2">
+ <name>launch_slap</name>
+ <version>1.0.0</version>
+ <description>
+ TODO!
+ </description>
+
+ <license>GPLv3</license>
+
+ <author email="dsor@gmail.com">DSOR GROUP</author>
+ <maintainer email="dsor@gmail.com">genX</maintainer>
+
+ <buildtool_depend>catkin</buildtool_depend>
+
+ <depend>std_msgs</depend>
+
+ <depend>roscpp</depend>
+
+
+</package>

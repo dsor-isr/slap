@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<launch>
+      
+      <!-- Slap Cooperative_control -->
+      <group ns="slap">
+        <include file="$(find cooperative_control)/launch/cooperative_control.launch"/>
+    
+
+        <!-- Slap Tracking control -->
+        <include file="$(find tracking_control)/launch/tracking_control.launch"/>
+
+        <!-- Slap dekf -->
+        <include file="$(find dekf)/launch/dekf.launch"/>
+
+        <!-- Slap trajectory planning -->
+        <include file="$(find trajectory_planning)/launch/trajectory_planning.launch"/>
+      
+        <!-- Slap Comms -->
+        <include file="$(find comms_slap)/launch/comms_slap.launch"/>
+
+        <!-- Slap Comms -->
+        <include file="$(find range_simulation)/launch/range_simulation.launch"/>
+      </group>
+
+</launch>

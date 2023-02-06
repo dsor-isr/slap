@@ -1,0 +1,22 @@
+node_frequency: 10
+# topics:
+#   subscribers:
+#     gamma_dot: "/slap/internal/gamma_dot"
+#     target_pdf: "/slap/internal/target/pdf"
+#   publishers:
+#     st_curve: "/slap/st_curve"
+#     st_curve_to_console: "/Virtual/State"
+#     internal_gamma: "/slap/internal/gamma"
+
+#   services:
+#     nominal_gamma_dot: "/slap/nominal_desired_gamma_dot"
+#     rotate_target_mode: "/slap/rotate_target_mode"
+#     behind_target_mode: "/slap/fixed_target_mode"
+#     set_gamma: "/slap/set_gamma"
+
+
+formation_offset: 0.0         # for Mblack vehicle, 90 for Mred
+radius_x: 10.0
+radius_y: 10.0
+radius_z: 0.0
+vd_bar: 0.03 
