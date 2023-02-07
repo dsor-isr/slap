@@ -76,7 +76,7 @@
  double RangeSimulationNode::nodeFrequency()
  {
  	double node_frequency;
- 	nh_.param("node_frequency", node_frequency, 0.66);
+ 	nh_p_.param("node_frequency", node_frequency, 0.66);
  	ROS_INFO("Node will run at : %lf [hz]", node_frequency);
  	return node_frequency;
  }
