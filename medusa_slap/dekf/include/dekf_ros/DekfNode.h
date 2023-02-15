@@ -32,6 +32,9 @@
  #include <medusa_slap_msg/SetMatricesQR.h>
  #include <medusa_slap_msg/SetETCParameter.h>
 
+ #include <medusa_slap_msg/SetFloat64.h>
+
+
  #include <medusa_slap_msg/ETCInfo.h>
 
 
@@ -90,6 +93,8 @@
 
 	ros::ServiceServer set_matrices_QR_srv_ ; 
 	ros::ServiceServer set_ETC_parameter_srv_ ; 
+	ros::ServiceServer set_target_depth_srv_ ; 
+
 
 
 	/**
@@ -134,6 +139,9 @@
 	bool setMatricesQR(medusa_slap_msg::SetMatricesQR::Request &req, medusa_slap_msg::SetMatricesQR::Response &res);
 
 	bool setETCParameter(medusa_slap_msg::SetETCParameter::Request &req, medusa_slap_msg::SetETCParameter::Response &res);
+
+	bool setTargetDepth(medusa_slap_msg::SetFloat64::Request &req, medusa_slap_msg::SetFloat64::Response &res);
+
 	/**
 	 * @brief auxilary methods
 	 */    

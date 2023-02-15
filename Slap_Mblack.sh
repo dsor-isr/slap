@@ -178,3 +178,10 @@ then
   fi
 fi
 
+if [ $mode == set_target_depth ]
+then
+  # 
+    read -p 'target_depth: ' target_depth
+  
+    rosservice call /mblack0/slap/dekf/set_target_depth "{data: $target_depth}"
+fi

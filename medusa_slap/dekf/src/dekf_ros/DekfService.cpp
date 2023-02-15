@@ -18,6 +18,8 @@ void DekfNode::initializeServices() {
 
   std::string set_ETC_parameter_srv_name = FarolGimmicks::getParameters<std::string>(nh_p_, "topics/services/set_ETC_parameter", "/set_ETC_parameter");
 
+  std::string set_target_depth_srv_name = FarolGimmicks::getParameters<std::string>(nh_p_, "topics/services/set_target_depth", "/set_target_depth");
+
 
   /* Advertise the services with these names */
   start_dekf_srv_= nh_.advertiseService(start_dekf_srv_name, &DekfNode::startDekf, this);
@@ -32,6 +34,8 @@ void DekfNode::initializeServices() {
   set_matrices_QR_srv_= nh_.advertiseService(set_matrices_QR_srv_name, &DekfNode::setMatricesQR, this);
 
   set_ETC_parameter_srv_ = nh_.advertiseService(set_ETC_parameter_srv_name, &DekfNode::setETCParameter, this);
+
+  set_target_depth_srv_ = nh_.advertiseService(set_target_depth_srv_name, &DekfNode::setTargetDepth, this);
 
 }
 
@@ -152,6 +156,20 @@ double c2 = req.c2;
 dekf_algorithm_.setETCParameters(c0, c1, c2);
 
 ROS_INFO("update matrices ETC paramter successfully");
+
+res.success = true;
+
+return true;
+}
+
+
+bool DekfNode::setTargetDepth(medusa_slap_msg::SetFloat64::Request &req, medusa_slap_msg::SetFloat64::Response &res){
+ 
+double target_depth = req.data;
+
+dekf_algorithm_.setTargetDepth(target_depth);
+
+ROS_INFO("update target depth successfully");
 
 res.success = true;
 

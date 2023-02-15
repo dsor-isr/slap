@@ -175,21 +175,24 @@ void DekfAlgorithm::localCorrection(double range, Eigen::Vector2d vehicle_positi
 	// std::cout << "Before Local correction target info vector" << target_pdf_.info_vector << std::endl;
 	// std::cout << "Before Local correction target info matrix" << target_pdf_.info_matrix << std::endl;
 //		std::cout << " local correction" << std::endl; 
+	    ROS_INFO("target depth is: %f", target_depth_);
+
 		Eigen::Vector2d target_position_hat_;
 		Eigen::MatrixXd C_(1,4); 
-		double range_hat_;
+		double range_2D_hat_;
+		double range_2D_meas;
 		Eigen::MatrixXd resid(1,1);
 		
 		target_position_hat_ << target_pdf_.state[0], target_pdf_.state[1];
 
-		double tem = (vehicle_position - target_position_hat_).norm();
-		range_hat_ = sqrt(tem*tem + target_depth_*target_depth_);
+		range_2D_hat_ = (vehicle_position - target_position_hat_).norm();
+		range_2D_meas = sqrt(range*range - target_depth_*target_depth_);
 	    
-		C_ << (target_position_hat_[0] - vehicle_position[0])/range_hat_,
-			  (target_position_hat_[1] - vehicle_position[1] )/range_hat_,
+		C_ << (target_position_hat_[0] - vehicle_position[0])/range_2D_hat_,
+			  (target_position_hat_[1] - vehicle_position[1])/range_2D_hat_,
 			   0,
 			   0;
-		resid << range - range_hat_ + C_.row(0)*target_pdf_.state;
+		resid << range_2D_meas - range_2D_hat_ + C_.row(0)*target_pdf_.state;
 
         target_pdf_.info_vector +=  C_.transpose()*V_*resid;
         target_pdf_.info_matrix +=  C_.transpose()*V_*C_;
