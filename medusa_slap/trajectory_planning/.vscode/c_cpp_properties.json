@@ -1,0 +1,45 @@
+{
+  "configurations": [
+    {
+      "browse": {
+        "databaseFilename": "",
+        "limitSymbolsToIncludedHeaders": true
+      },
+      "includePath": [
+        "/home/hung/catkin_ws_slap/devel/include/**",
+        "/opt/ros/noetic/include/**",
+        "/home/hung/catkin_ws_slap/src/slap_simulation/dsor_simulation/farol/farol_sim/auv_sim/include/**",
+        "/home/hung/catkin_ws_slap/src/slap_simulation/dsor_simulation/farol/farol_comms/comms_acoustic/comms_state_broadcaster/include/**",
+        "/home/hung/catkin_ws_slap/src/slap_simulation/dsor_simulation/farol/farol_addons/console_path_parser/include/**",
+        "/home/hung/catkin_ws_slap/src/slap_simulation/slap/medusa_slap/cooperative_control/include/**",
+        "/home/hung/catkin_ws_slap/src/slap_simulation/dsor_simulation/farol/farol_control/outer_loops_controllers/cpf_control/include/**",
+        "/home/hung/catkin_ws_slap/src/slap_simulation/slap/medusa_slap/dekf/include/**",
+        "/home/hung/catkin_ws_slap/src/slap_simulation/dsor_simulation/farol/farol_planning/dsor_paths/include/**",
+        "/home/hung/catkin_ws_slap/src/slap_simulation/dsor_simulation/farol/farol_addons/dsor_utils/dsor_utils/include/**",
+        "/home/hung/catkin_ws_slap/src/slap_simulation/dsor_simulation/farol/farol_comms/comms_acoustic/evo_tools/include/**",
+        "/home/hung/catkin_ws_slap/src/slap_simulation/dsor_simulation/farol/farol_addons/libraries/farol_gimmicks_library/include/**",
+        "/home/hung/catkin_ws_slap/src/slap_simulation/dsor_simulation/farol/farol_control/inner_loops_controllers/inner_loops_pid/include/**",
+        "/home/hung/catkin_ws_slap/src/slap_simulation/dsor_simulation/farol/farol_comms/comms_acoustic/interrogation_scheme/include/**",
+        "/home/hung/catkin_ws_slap/src/slap_simulation/dsor_simulation/farol/farol_nav/nav_tools/include/**",
+        "/home/hung/catkin_ws_slap/src/slap_simulation/dsor_simulation/farol/farol_control/outer_loops_controllers/path_following/include/**",
+        "/home/hung/catkin_ws_slap/src/slap_simulation/slap/medusa_slap/range_simulation/include/**",
+        "/home/hung/catkin_ws_slap/src/slap_simulation/dsor_simulation/farol/farol_nav/sensor_fusion/include/**",
+        "/home/hung/catkin_ws_slap/src/slap_simulation/dsor_simulation/farol/farol_sim/sensor_sim/include/**",
+        "/home/hung/catkin_ws_slap/src/slap_simulation/dsor_simulation/farol/farol_control/static_thruster_allocation/include/**",
+        "/home/hung/catkin_ws_slap/src/slap_simulation/dsor_simulation/farol_gazebo/uuv_simulator/uuv_gazebo_plugins/tether_plugin/include/**",
+        "/home/hung/catkin_ws_slap/src/slap_simulation/slap/medusa_slap/tracking_control/include/**",
+        "/home/hung/catkin_ws_slap/src/slap_simulation/slap/medusa_slap/trajectory_planning/include/**",
+        "/home/hung/catkin_ws_slap/src/slap_simulation/dsor_simulation/farol_gazebo/uuv_simulator/uuv_gazebo_plugins/uuv_gazebo_plugins/include/**",
+        "/home/hung/catkin_ws_slap/src/slap_simulation/dsor_simulation/farol_gazebo/uuv_simulator/uuv_gazebo_plugins/uuv_gazebo_ros_plugins/include/**",
+        "/home/hung/catkin_ws_slap/src/slap_simulation/dsor_simulation/farol_gazebo/uuv_simulator/uuv_sensor_plugins/uuv_sensor_ros_plugins/include/**",
+        "/home/hung/catkin_ws_slap/src/slap_simulation/dsor_simulation/farol_gazebo/uuv_simulator/uuv_world_plugins/uuv_world_plugins/include/**",
+        "/home/hung/catkin_ws_slap/src/slap_simulation/dsor_simulation/farol_gazebo/uuv_simulator/uuv_world_plugins/uuv_world_ros_plugins/include/**",
+        "/home/hung/catkin_ws_slap/src/slap_simulation/dsor_simulation/farol/farol_control/vehicle_stabilizer/include/**",
+        "/home/hung/catkin_ws_slap/src/slap_simulation/dsor_simulation/farol/farol_control/outer_loops_controllers/waypoint/include/**",
+        "/usr/include/**"
+      ],
+      "name": "ROS"
+    }
+  ],
+  "version": 4
+}

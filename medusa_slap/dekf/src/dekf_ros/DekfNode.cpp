@@ -144,7 +144,7 @@
 	 * @brief Set initial internal target's state
 	 */ 
     for (int i = 0; i < 4; i++){
-	   internal_target_pdf_.state[i] = ini_target_state[i] + state_offset[i];
+	   internal_target_pdf_.state[i] = ini_target_state[i];
 	   state_offset_vector_[i] = state_offset[i];
 	   for (int j = 0; j < 4; j++){
 		   internal_target_pdf_.cov(i,j) = ini_target_cov[4*i+j];
@@ -184,16 +184,24 @@
 		internal_target_pdf_.state = dekf_algorithm_.getTargetState();	
 		internal_target_pdf_.cov = dekf_algorithm_.getTargetCovariance();
 		smoothTargetState();
-		if (tracking_true_target_){
-		    smoothed_target_state_ <<   target_position_[0], 
-		                                target_position_[1],
+		if (tracking_true_target_)
+		{
+		    absolute_target_state_ <<   target_position_[0] , 
+		                                target_position_[1] ,
 		 								target_velocity_[0],
 		 								target_velocity_[1];
- 		}
-										 	 
+		}
+		else
+		{
+	   		absolute_target_state_ << smoothed_target_state_[0] + state_offset_vector_[0],
+									  smoothed_target_state_[1] + state_offset_vector_[1],
+									  smoothed_target_state_[2],
+									  smoothed_target_state_[3];							  
+		}							 	 
 	 	medusa_slap_msg::TargetPDF msg_pdf;
+		msg_pdf.Veh_ID = Veh_ID; 
 		for(int i = 0; i < 4; i++) {
-     		msg_pdf.state[i] = smoothed_target_state_[i];
+     		msg_pdf.state[i] = absolute_target_state_[i];
          	msg_pdf.cov_row1[i] = internal_target_pdf_.cov(0,i);
         	msg_pdf.cov_row2[i] = internal_target_pdf_.cov(1,i); 
 	 		msg_pdf.cov_row3[i] = internal_target_pdf_.cov(2,i); 
@@ -224,6 +232,7 @@
 			
 				medusa_slap_msg::TargetPDF msg_pdf_to_neighbor_;
 			/* Header for the message */
+				msg_pdf_to_neighbor_.Veh_ID = Veh_ID;
 				msg_pdf_to_neighbor_.header.seq = seq_;
 				seq_++	;				 //Increment the sequence id
 				msg_pdf_to_neighbor_.header.stamp = ros::Time::now();
@@ -239,10 +248,10 @@
 			}
 		 }
 /* Publish estimated target position to console */
-
 		farol_msgs::mState estimated_target_msg; 
-		estimated_target_msg.Y = internal_target_pdf_.state[0] ;
-		estimated_target_msg.X = internal_target_pdf_.state[1] ;
+		
+		estimated_target_msg.Y = internal_target_pdf_.state[0] + state_offset_vector_[0];
+		estimated_target_msg.X = internal_target_pdf_.state[1] + state_offset_vector_[1];
 		estimated_target_msg.Z = 0 ;
 		double heading = atan2(internal_target_pdf_.state[3],internal_target_pdf_.state[2])* 180 /M_PI;
 		estimated_target_msg.Yaw = (int(heading) + 360) % 360;
@@ -332,7 +341,8 @@
 		ROS_INFO("Dekf node has received the first vehicle state"); 	
 
 	}
-	vehicle_position_ << msg.position.north, msg.position.east;
+	vehicle_position_ << msg.position.north - state_offset_vector_[0], msg.position.east - state_offset_vector_[1];
+	
  }
 void DekfNode::smoothTargetState() {
 	 smoothed_target_state_ = 0.9*smoothed_target_state_ + 0.1*internal_target_pdf_.state;

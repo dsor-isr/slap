@@ -22,7 +22,7 @@
 
 /* The constructor for the DekfAlgorithm Path Following Controller */
 DekfAlgorithm::DekfAlgorithm() {
-   Q_.diagonal() << 1, 1, 0.01, 0.01;
+   Q_.diagonal() << 0.01, 0.01, 0.001, 0.001;
    R_.resize(1,1);
    R_ << 1;
    setMatricesWV(Q_,R_);
@@ -33,8 +33,6 @@ DekfAlgorithm::DekfAlgorithm() {
 	    0, 1, 0,  dt,
         0, 0, 1,  0,
         0, 0, 0,  1;
-
-
 }
 
 
@@ -197,8 +195,9 @@ void DekfAlgorithm::localCorrection(double range, Eigen::Vector2d vehicle_positi
         target_pdf_.info_vector +=  C_.transpose()*V_*resid;
         target_pdf_.info_matrix +=  C_.transpose()*V_*C_;
 
-		target_pdf_.state = target_pdf_.info_matrix.inverse()*target_pdf_.info_vector;
 		target_pdf_.cov = target_pdf_.info_matrix.inverse();	
+		target_pdf_.state = target_pdf_.cov*target_pdf_.info_vector;
+
 
 	// std::cout << "Local correction target state" << target_pdf_.state << std::endl;
 	// std::cout << "Local correction target cov" << target_pdf_.cov << std::endl;
@@ -223,6 +222,19 @@ void DekfAlgorithm::fuseWithNeighbor(Eigen::MatrixXd augmented_target_info_vecto
 	Eigen::Matrix4d sum_target_info_matrix_;
 	sum_target_info_vector_ = target_pdf_.info_vector;
 	sum_target_info_matrix_ = target_pdf_.info_matrix;
+
+	std::cout << "local information vector: " << std::endl;
+	std::cout << target_pdf_.info_vector<< std::endl;
+    std::cout << "neighbor information vector: " << std::endl; 
+	std::cout << augmented_target_info_vector<< std::endl;
+
+	std::cout << "local information matrix:" << std::endl;
+	std::cout << target_pdf_.info_matrix<< std::endl;
+    std::cout << "neighbor information matrix:" << std::endl; 
+	std::cout <<  augmented_target_info_matrix << std::endl;
+
+	// std::cout << "matrix" << neighbor_target_info_matrix << std::endl; 
+	// std::cout << "augmented matrix" << augmented_target_info_matrix_ << std::endl;
 	
 	for(int i=0; i < neighbor_set_.size(); i++){
 		if (i!=Veh_ID) {
@@ -240,8 +252,13 @@ void DekfAlgorithm::fuseWithNeighbor(Eigen::MatrixXd augmented_target_info_vecto
 }
 void DekfAlgorithm::setMatricesWV(Eigen::MatrixXd Q, Eigen::MatrixXd R){
    
-	double Q_scale_ = 1e-5;
-    double R_scale_ = 1e-4;    
+	// double Q_scale_ = 1e-5;
+    // double R_scale_ = 1e-4; 
+
+	// new 
+
+	double Q_scale_ = 1;
+    double R_scale_ = 1;    
 
     Q_ = Q*Q_scale_;
 	R_ = R*R_scale_; 

@@ -61,9 +61,8 @@ bool DekfNode::stopEkf(medusa_slap_msg::StartStop::Request &req, medusa_slap_msg
   } else {
     ROS_INFO("Ekf was not running.");
   }
-  ekf_start_ = false;
-  /* Reset Dekf */
-  dekf_algorithm_.reset();
+  /* stop Ekf */
+  ekf_start_ = false;    // 
     
   res.success = true;
   return true;
@@ -113,8 +112,13 @@ double var_pos_x = req.var_pos_x;
 double var_pos_y = req.var_pos_y;
 double var_vel_x = req.var_vel_x;
 double var_vel_y = req.var_vel_y;
-internal_target_pdf_.state = relative_state + state_offset_vector_;
+internal_target_pdf_.state = relative_state;
+
+internal_target_pdf_.cov.setZero(4,4); 
+
 internal_target_pdf_.cov.diagonal() << var_pos_x, var_pos_y, var_vel_x, var_vel_y;
+
+
 dekf_algorithm_.setInternalTargetPDF(internal_target_pdf_); 			
 
 res.success = true;

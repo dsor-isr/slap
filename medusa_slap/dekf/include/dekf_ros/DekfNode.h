@@ -208,7 +208,9 @@
      */
 	Eigen::Vector4d state_offset_vector_;
     Eigen::Vector2d vehicle2_position_;
+	Eigen::Vector4d absolute_target_state_;
 	Eigen::Vector4d smoothed_target_state_;
+	
 	bool tracking_true_target_{false};
 	ros::Time initial_time;
     
