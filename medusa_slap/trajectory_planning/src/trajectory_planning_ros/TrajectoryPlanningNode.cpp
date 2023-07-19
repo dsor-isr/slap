@@ -193,14 +193,6 @@ void TrajectoryPlanningNode::internalGammaDotCallback(const std_msgs::Float64& m
 		msg.path_vel_gamma[i] = path_vel_gamma[i];
 	}
 	st_curve_pub.publish(msg) ; 
-
-
-    /* Publish the reference point on the S-T curve that vehicle need to track  */
-      farol_msgs::mState st_state_msg; 
-
-	  st_state_msg.Y = traj_pos[0] + path_pos[0];
-      st_state_msg.X = traj_pos[1] + path_pos[1];
-      st_state_msg.Z = traj_pos[2] + path_pos[2];
 	
 	/* Publish gamma internally */
 	farol_msgs::CPFGamma internal_gamma_msg;
@@ -210,11 +202,19 @@ void TrajectoryPlanningNode::internalGammaDotCallback(const std_msgs::Float64& m
    	internal_gamma_pub_.publish(internal_gamma_msg);
 
 
+/* Publish the reference point on the S-T curve that vehicle need to track  */
+      farol_msgs::mState st_state_msg; 
+
+	  st_state_msg.Y = traj_pos[0] + path_pos[0];
+      st_state_msg.X = traj_pos[1] + path_pos[1];
+      st_state_msg.Z = traj_pos[2] + path_pos[2];
+	  double heading = atan2(traj_vel[1],traj_vel[0])* 180 /M_PI;
+	  st_state_msg.Yaw = (int(heading) + 360) % 360;
 	// // //  st_state_msg.Y =  4290841;
     // // //  st_state_msg.X =  491926;
     // // //  st_state_msg.Z =   0.0;
     // //  st_state_msg.Yaw = 0.0; 
-//	 st_curve_to_console_pub.publish(st_state_msg);
+	  st_curve_to_console_pub.publish(st_state_msg);
 
 
 
