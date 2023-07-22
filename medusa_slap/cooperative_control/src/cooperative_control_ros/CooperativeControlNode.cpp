@@ -27,9 +27,6 @@
  */
  CooperativeControlNode::~CooperativeControlNode() {
 
- 	// +.+ stop timer
- 	timer_.stop();
-
  	// +.+ shutdown node
  	nh_.shutdown();
  }
@@ -60,7 +57,7 @@
 
 	/* These topics names later can be get from config file */  
 	//std::string vc_topic_name =  "/mblack/slap/internal/vc";
-	std::string vc_topic_name =  FarolGimmicks::getParameters<std::string>(nh_p_,"topics/publishers/vc");
+	std::string vc_info_topic_name =  FarolGimmicks::getParameters<std::string>(nh_p_,"topics/publishers/vc_info");
 	//std::string gamma_to_neighbor_topic_name =  "/mblack/slap/gamma_to_neighbor";
 	std::string gamma_to_neighbor_topic_name = FarolGimmicks::getParameters<std::string>(nh_p_,"topics/publishers/to_neighbor_gamma"); 
 
@@ -68,7 +65,7 @@
 
 	/* Initialize the publisher */
 	
-  	vc_pub_ = nh_.advertise<std_msgs::Float64>(vc_topic_name, 1);
+  	cpf_info_pub_ = nh_.advertise<medusa_slap_msg::CPFinfo>(vc_info_topic_name, 1);
   	to_neighbor_gamma_pub_ = nh_.advertise<farol_msgs::CPFGamma>(gamma_to_neighbor_topic_name, 1);
 	cpf_etc_info_pub_ = nh_.advertise<medusa_slap_msg::ETCInfo>(cpf_etc_info_name, 1);
 
@@ -81,7 +78,6 @@
  */
  void CooperativeControlNode::initializeTimer() {
  	timer_ =nh_.createTimer(ros::Duration(1.0/CooperativeControlNode::nodeFrequency()), &CooperativeControlNode::timerIterCallback, this);
- 	timer_.stop();
  }
 
  /*
@@ -145,9 +141,10 @@
 void CooperativeControlNode::timerIterCallback(const ros::TimerEvent &event) {
 		// std::cout << "gamma vector_:" << gamma_vector_ << std::endl;
 		// std::cout << "gamma desired speed vector_:" << gamma_desired_speed_vector_ << std::endl;
+	double time = abs((ros::Time::now()- initial_time).toSec());
 
-		cooperative_control_algorithm_.updateGammaVector(gamma_vector_);
-		cooperative_control_algorithm_.updateGammaDesiredSpeedVector(gamma_desired_speed_vector_);
+	cooperative_control_algorithm_.updateGammaVector(gamma_vector_);
+	cooperative_control_algorithm_.updateGammaDesiredSpeedVector(gamma_desired_speed_vector_);
 	 if (received_internal_gamma && received_neighbor_gamma){	 
  	/* Update internal and neighbor gamma */
 		// cooperative_control_algorithm_.updateInternalGamma(internal_gamma_);
@@ -157,20 +154,32 @@ void CooperativeControlNode::timerIterCallback(const ros::TimerEvent &event) {
 		cooperative_control_algorithm_.callCooperativeController(0.1);
 	/* Get the correction speed to be published */
 		vc_ = cooperative_control_algorithm_.getCorrectionSpeed();
-	
-	/* Publish vc */
-   		FarolGimmicks::publishValue<std_msgs::Float64, const double>(vc_pub_,vc_);
+
 	 } 
+	 else
+	 {
+		 		vc_ = 0;
+	 }
+
+	/* Publish vc */
+   	   medusa_slap_msg::CPFinfo msg_cpf_info;
+	   msg_cpf_info.time = time;
+	   msg_cpf_info.cpf_enable = cpf_enable_;
+	   msg_cpf_info.vc = vc_;
+	   msg_cpf_info.time = time;
+	   
+	   cpf_info_pub_.publish(msg_cpf_info);
+
 
 	/* Broadcast the latest internal gamma to neighboring vehicle, this depends on triggering mechanism */
 
-	double time = abs((ros::Time::now()- initial_time).toSec());
 	// std::cout << "current time:" << time << std::endl;
 	EtcInfo etc_info_ = cooperative_control_algorithm_.checkBroadcastSignal(time);
 	medusa_slap_msg::ETCInfo msg_cpf_etc;
 	msg_cpf_etc.broadcast_signal = etc_info_.broadcast_signal;
 	msg_cpf_etc.threshold = etc_info_.threshold;
 	msg_cpf_etc.error = etc_info_.est_error;
+	msg_cpf_etc.time  = time;
 	cpf_etc_info_pub_.publish(msg_cpf_etc);
 	// std::cout << "current time next:" << time << std::endl;
 

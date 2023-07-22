@@ -34,6 +34,8 @@
 #include "medusa_slap_msg/StartStop.h"
 #include "medusa_slap_msg/SetFloat64.h"
 #include "medusa_slap_msg/SetTCGains.h"
+#include "medusa_slap_msg/CPFinfo.h"
+
 
 
 
@@ -77,7 +79,7 @@
  	*/
 		ros::Subscriber flag_sub_;					// for vehicle status
 		ros::Subscriber state_sub_;					// for vehicle state
-		ros::Subscriber vc_sub_;					// for correction speed - from cooperative controller node 
+		ros::Subscriber cpf_info_sub_;					// for correction speed - from cooperative controller node 
 		ros::Subscriber st_curve_sub_;					// for correction speed - from cooperative controller node 
 
 
@@ -140,7 +142,7 @@
  	void timerIterCallback(const ros::TimerEvent& event);
 	void wpStatusCallback(const std_msgs::Int8& msg);
 	void vehicleStateCallback(const auv_msgs::NavigationStatus &msg);
-	void vcCallback(const std_msgs::Float64 &msg);
+	void cpf_infoCallback(const medusa_slap_msg::CPFinfo &msg);
 	void stCurveCallback(const medusa_slap_msg::STCurve &msg);
 	void flagCallback(const std_msgs::Int8 &msg);
 

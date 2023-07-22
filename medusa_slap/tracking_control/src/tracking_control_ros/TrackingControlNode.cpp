@@ -22,8 +22,7 @@
  	// +.+ shutdown publishers
  	// ---> add publishers here
  	// Example: uref_pub.shutdown();
- 	 wp_status_timer_pub.shutdown();
-
+ 
  	// +.+ shutdown subscribers
  	// ---> add subscribers here
  	// Example: state_sub.shutdown();
@@ -50,13 +49,13 @@
 	// std::string state_topic_name =  "/mblack/nav/filter/state";
 	std::string vehicle_state_topic_name =  FarolGimmicks::getParameters<std::string>(nh_p_, "topics/subscribers/vehicle_state");
 	//std::string vc_topic_name =  "/mblack/slap/internal/vc"; 
-	std::string vc_topic_name = FarolGimmicks::getParameters<std::string>(nh_p_, "topics/subscribers/vc"); 
+	std::string cpf_info_topic_name = FarolGimmicks::getParameters<std::string>(nh_p_, "topics/subscribers/vc_info"); 
 	
 	std::string st_curve_topic_name = FarolGimmicks::getParameters<std::string>(nh_p_, "topics/subscribers/st_curve"); 
 
 
 	state_sub_ = nh_.subscribe(vehicle_state_topic_name, 10, &TrackingControlNode::vehicleStateCallback, this);
-	vc_sub_ =  nh_.subscribe(vc_topic_name, 10, &TrackingControlNode::vcCallback, this);
+	cpf_info_sub_ =  nh_.subscribe(cpf_info_topic_name, 10, &TrackingControlNode::cpf_infoCallback, this);
 	st_curve_sub_ =  nh_.subscribe(st_curve_topic_name, 10, &TrackingControlNode::stCurveCallback, this);
 
 	flag_sub_ = nh_.subscribe(flag_topic_name, 10, &TrackingControlNode::flagCallback, this);
@@ -68,8 +67,6 @@
  */
  void TrackingControlNode::initializePublishers() {
  	ROS_INFO("Initializing Publishers for TrackingControlNode"); 	
-
- 	wp_status_timer_pub = nh_.advertise<std_msgs::Bool>("wp_status",10);
 
 	/* These topics names later can be get from config file */  
 	// std::string surge_topic_name =  "/mblack/ref/surge";
@@ -165,13 +162,13 @@ void TrackingControlNode::vehicleStateCallback(const auv_msgs::NavigationStatus 
 		  							  msg.orientation_rate.y * M_PI / 180, 
 		  						      msg.orientation_rate.z * M_PI / 180;
 }
-void TrackingControlNode::vcCallback(const std_msgs::Float64 &msg){
+void TrackingControlNode::cpf_infoCallback(const medusa_slap_msg::CPFinfo &msg){
   if (!received_vc) {
     received_vc = true;
 	ROS_INFO("Tracking control node has received the first correction speed vc"); 	
 
   }
-	st_curve_state_.vc = msg.data;
+	st_curve_state_.vc = msg.vc;
 }
 
 void TrackingControlNode::stCurveCallback(const medusa_slap_msg::STCurve &msg){

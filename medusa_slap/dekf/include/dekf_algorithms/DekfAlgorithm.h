@@ -51,7 +51,7 @@ class DekfAlgorithm {
     /**
      *  @brief Methods to update vehicle, path, and target states
     */
-      void setInternalTargetPDF(TargetPDF internal_target_pdf);
+      void setLocalTargetPDF(TargetPDF internal_target_pdf);
       void setVehicleID(int veh_id);
       void setTargetDepth(double depth);
       void setNeighborSet(Eigen::VectorXi neighbor_set);
@@ -61,9 +61,9 @@ class DekfAlgorithm {
       void setMatricesWV(Eigen::MatrixXd Q, Eigen::MatrixXd R);
 
       void setETCParameters(double c0, double c1, double c2);
-      void resetEstTargetPDF();
-      void propagateEstTargetPDF();
-      void setEstTargetPDF();
+      void resetAuxTargetPDF();
+      void propagateAuxTargetPDF();
+      void setAuxTargetPDF();
 
 
 
@@ -83,10 +83,14 @@ class DekfAlgorithm {
     /**
      * @brief Methods to get estimated state and covariance
      */
-      Eigen::Vector4d getTargetState(); 
-      Eigen::Matrix4d getTargetCovariance();
-      Eigen::Vector4d getTargetInfoVector(); 
-      Eigen::Matrix4d getTargetInfoMatrix();
+      Eigen::Vector4d getLocalTargetState(); 
+      Eigen::Matrix4d getLocalTargetCovariance();
+      Eigen::Vector4d getLocalTargetInfoVector(); 
+      Eigen::Matrix4d getLocalTargetInfoMatrix();
+      Eigen::Vector4d getAuxTargetState(); 
+      Eigen::Matrix4d getAuxTargetInfoMatrix();
+      Eigen::Matrix4d getAuxTargetCovariance();
+      
       EtcInfo checkBroadcastSignal(double time);
 
     /**
@@ -127,7 +131,7 @@ protected:
 
     TargetPDF target_pdf_;
     // the following pdf is used for event-triggered communication
-    TargetPDF est_target_pdf_;
+    TargetPDF target_pdf_aux_;
     TargetPDF neighbor_est_target_pdf_;
 
     EtcInfo etc_info_;
@@ -141,8 +145,8 @@ protected:
 
     Eigen::VectorXi neighbor_set_;
 
-    const double x_offset = 	4290797.0;
-    const double y_offset =   491936.0;
+    // const double x_offset = 	4290797.0;
+    // const double y_offset =   491936.0;
 
     bool received_target_pdf_from_neighbors_{false};
     bool dekf_mode_{false};

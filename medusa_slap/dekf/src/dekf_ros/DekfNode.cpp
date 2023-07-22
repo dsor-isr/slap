@@ -79,6 +79,8 @@
 	std::string target_pdf_to_neighbor_topic_name = FarolGimmicks::getParameters<std::string>(nh_p_, "topics/publishers/target_pdf_to_neighbor");
 	std::string estimated_target_to_console_topic_name = FarolGimmicks::getParameters<std::string>(nh_p_, "topics/publishers/estimated_target_to_console");
 	std::string dekf_etc_info_topic_name = FarolGimmicks::getParameters<std::string>(nh_p_, "topics/publishers/dekf_etc_info");
+	std::string target_pdf_absolute_topic_name = FarolGimmicks::getParameters<std::string>(nh_p_, "topics/publishers/target_pdf_absolute");
+	std::string target_pdf_aux_topic_name = FarolGimmicks::getParameters<std::string>(nh_p_, "topics/publishers/target_pdf_aux");
 
 	/* Initialize the publisher */
 	
@@ -86,6 +88,10 @@
 	target_pdf_to_neighbor_pub_ = nh_.advertise<medusa_slap_msg::TargetPDF>(target_pdf_to_neighbor_topic_name,1);  
 	estimated_target_to_console_pub_ = nh_.advertise<farol_msgs::mState>(estimated_target_to_console_topic_name,1);  
 	dekf_etc_info_pub_ = nh_.advertise<medusa_slap_msg::ETCInfo>(dekf_etc_info_topic_name,1);  
+
+	target_pdf_absolute_pub_ = nh_.advertise<medusa_slap_msg::TargetPDF>(target_pdf_absolute_topic_name,1);  
+	target_pdf_aux_pub_ = nh_.advertise<medusa_slap_msg::TargetPDF>(target_pdf_aux_topic_name,1);  
+
 
  }
 
@@ -144,10 +150,10 @@
 	 * @brief Set initial internal target's state
 	 */ 
     for (int i = 0; i < 4; i++){
-	   internal_target_pdf_.state[i] = ini_target_state[i];
+	   target_pdf_local_init_.state[i] = ini_target_state[i];
 	   state_offset_vector_[i] = state_offset[i];
 	   for (int j = 0; j < 4; j++){
-		   internal_target_pdf_.cov(i,j) = ini_target_cov[4*i+j];
+		   target_pdf_local_init_.cov(i,j) = ini_target_cov[4*i+j];
 	   } 
     }  
 
@@ -155,14 +161,13 @@
 		neighbor_set_[i] = adj_matrix[num_vehicles*Veh_ID + i];
 	}
 	
-    smoothed_target_state_ = internal_target_pdf_.state;
 
-	dekf_algorithm_.setInternalTargetPDF(internal_target_pdf_); 				// update vehicle internal target pdf
+	dekf_algorithm_.setLocalTargetPDF(target_pdf_local_init_); 				// update vehicle internal target pdf
     dekf_algorithm_.setNeighborSet(neighbor_set_); 							// set neighbor set
     dekf_algorithm_.setVehicleID(Veh_ID); 									// set vehicle ID
 	dekf_algorithm_.setTargetDepth(target_depth_);
 
-	dekf_algorithm_.setEstTargetPDF(); 				// for ETC
+	dekf_algorithm_.setAuxTargetPDF(); 				// for ETC
 
  }
 
@@ -171,64 +176,76 @@
   */ 
  void DekfNode::timerIterCallback(const ros::TimerEvent &event) {
 
+	float time = abs((ros::Time::now()- initial_time).toSec());
+
 	/** 
 	 * @brief Keep predicting target's state at every sampling interval (1/node_frequency) 
 	*/
-	  if (ekf_start_){
+	  if (ekf_enable_){
 	 	dekf_algorithm_.localPrediction();	 				
 	  } 
 	
 	/** 
 	 * @brief Publish target pdf (to be used by the tracking controller) 
 	*/
-		internal_target_pdf_.state = dekf_algorithm_.getTargetState();	
-		internal_target_pdf_.cov = dekf_algorithm_.getTargetCovariance();
-		smoothTargetState();
+		TargetPDF target_pdf_local_ ;
+
+		target_pdf_local_.state = dekf_algorithm_.getLocalTargetState();	
+		target_pdf_local_.cov   = dekf_algorithm_.getLocalTargetCovariance();
+		smoothTargetState(target_pdf_local_.state );
+
+        Eigen::Vector4d  absolute_target_state;
+
 		if (tracking_true_target_)
 		{
-		    absolute_target_state_ <<   target_position_[0] , 
-		                                target_position_[1] ,
-		 								target_velocity_[0],
+		    absolute_target_state <<   	target_position_[0] , 
+		                               	target_position_[1] ,
+		 							    target_velocity_[0],
 		 								target_velocity_[1];
 		}
 		else
 		{
-	   		absolute_target_state_ << smoothed_target_state_[0] + state_offset_vector_[0],
+	   		absolute_target_state <<  smoothed_target_state_[0] + state_offset_vector_[0],
 									  smoothed_target_state_[1] + state_offset_vector_[1],
 									  smoothed_target_state_[2],
 									  smoothed_target_state_[3];							  
 		}							 	 
-	 	medusa_slap_msg::TargetPDF msg_pdf;
-		msg_pdf.Veh_ID = Veh_ID; 
+	 	medusa_slap_msg::TargetPDF msg_pdf_absolute;
+		msg_pdf_absolute.Veh_ID = Veh_ID; 
 		for(int i = 0; i < 4; i++) {
-     		msg_pdf.state[i] = absolute_target_state_[i];
-         	msg_pdf.cov_row1[i] = internal_target_pdf_.cov(0,i);
-        	msg_pdf.cov_row2[i] = internal_target_pdf_.cov(1,i); 
-	 		msg_pdf.cov_row3[i] = internal_target_pdf_.cov(2,i); 
-        	msg_pdf.cov_row4[i] = internal_target_pdf_.cov(3,i); 
+     		msg_pdf_absolute.state[i] = absolute_target_state[i];
+         	msg_pdf_absolute.cov_row1[i] = target_pdf_local_.cov(0,i);
+        	msg_pdf_absolute.cov_row2[i] = target_pdf_local_.cov(1,i); 
+	 		msg_pdf_absolute.cov_row3[i] = target_pdf_local_.cov(2,i); 
+        	msg_pdf_absolute.cov_row4[i] = target_pdf_local_.cov(3,i); 
+			msg_pdf_absolute.ekf_enable  = ekf_enable_;
+			msg_pdf_absolute.dekf_enable = dekf_enable_;
+			msg_pdf_absolute.time = time;			 
         } 
-		target_pdf_pub_.publish(msg_pdf) ;
+		target_pdf_absolute_pub_.publish(msg_pdf_absolute) ;
  	
 	 /** 
 	  * @brief publish target pdf, to be used by the udp server 
 	  *        for broadasting to neighbor - this depend on event-triggered mechanism
 	  */
 
-	 	if (dekf_mode_){
-	 	
-			double time = abs((ros::Time::now()- initial_time).toSec());
+	 	if (dekf_enable_){
+	
 			EtcInfo etc_info_ = dekf_algorithm_.checkBroadcastSignal(time);
+
+
  			medusa_slap_msg::ETCInfo msg_dekf_etc;
 			msg_dekf_etc.broadcast_signal = etc_info_.broadcast_signal;
 			msg_dekf_etc.threshold = etc_info_.threshold;
  			msg_dekf_etc.error = etc_info_.kld;
+			msg_dekf_etc.time  = time;
 			dekf_etc_info_pub_.publish(msg_dekf_etc);
 			if (etc_info_.broadcast_signal){
 			/**
 			 * @brief get information state and matrix to broadcast to neighbors
 			 */
-				Eigen::Vector4d info_vector = dekf_algorithm_.getTargetInfoVector();				   	
-				Eigen::Matrix4d info_matrix = dekf_algorithm_.getTargetInfoMatrix();
+				Eigen::Vector4d info_vector = dekf_algorithm_.getLocalTargetInfoVector();				   	
+				Eigen::Matrix4d info_matrix = dekf_algorithm_.getLocalTargetInfoMatrix();
 			
 				medusa_slap_msg::TargetPDF msg_pdf_to_neighbor_;
 			/* Header for the message */
@@ -244,18 +261,48 @@
 					msg_pdf_to_neighbor_.cov_row3[i] = info_matrix(2,i); 
 					msg_pdf_to_neighbor_.cov_row4[i] = info_matrix(3,i); 
 				} 
+				msg_pdf_to_neighbor_.time = time;
 				target_pdf_to_neighbor_pub_.publish(msg_pdf_to_neighbor_) ;
 			}
 		 }
 /* Publish estimated target position to console */
 		farol_msgs::mState estimated_target_msg; 
 		
-		estimated_target_msg.Y = internal_target_pdf_.state[0] + state_offset_vector_[0];
-		estimated_target_msg.X = internal_target_pdf_.state[1] + state_offset_vector_[1];
+		estimated_target_msg.Y = target_pdf_local_.state[0] + state_offset_vector_[0];
+		estimated_target_msg.X = target_pdf_local_.state[1] + state_offset_vector_[1];
 		estimated_target_msg.Z = 0 ;
-		double heading = atan2(internal_target_pdf_.state[3],internal_target_pdf_.state[2])* 180 /M_PI;
+		double heading = atan2(target_pdf_local_.state[3],target_pdf_local_.state[2])* 180 /M_PI;
 		estimated_target_msg.Yaw = (int(heading) + 360) % 360;
 		estimated_target_to_console_pub_.publish(estimated_target_msg);
+
+
+/* Publish relative target pdf (state and information matrix) for debug  */
+	 	medusa_slap_msg::TargetPDF msg_target_pdf_local;
+		msg_target_pdf_local.Veh_ID = Veh_ID; 
+		for(int i = 0; i < 4; i++) {
+     		msg_target_pdf_local.state[i]    = target_pdf_local_.state[i];
+         	msg_target_pdf_local.cov_row1[i] = target_pdf_local_.cov(0,i);
+        	msg_target_pdf_local.cov_row2[i] = target_pdf_local_.cov(1,i); 
+	 		msg_target_pdf_local.cov_row3[i] = target_pdf_local_.cov(2,i); 
+        	msg_target_pdf_local.cov_row4[i] = target_pdf_local_.cov(3,i); 
+        } 
+		msg_target_pdf_local.time = time;
+		target_pdf_pub_.publish(msg_target_pdf_local) ;
+/* Publish aux target pdf (state and information matrix) for debug  */		
+		TargetPDF target_pdf_aux_;
+		target_pdf_aux_.state = dekf_algorithm_.getAuxTargetState();	
+		target_pdf_aux_.cov   = dekf_algorithm_.getAuxTargetCovariance();
+		medusa_slap_msg::TargetPDF msg_target_pdf_aux;
+		msg_target_pdf_aux.Veh_ID = Veh_ID; 
+		for(int i = 0; i < 4; i++) {
+     		msg_target_pdf_aux.state[i]    = target_pdf_aux_.state[i];
+         	msg_target_pdf_aux.cov_row1[i] = target_pdf_aux_.cov(0,i);
+        	msg_target_pdf_aux.cov_row2[i] = target_pdf_aux_.cov(1,i); 
+	 		msg_target_pdf_aux.cov_row3[i] = target_pdf_aux_.cov(2,i); 
+        	msg_target_pdf_aux.cov_row4[i] = target_pdf_aux_.cov(3,i); 
+        } 
+		msg_target_pdf_local.time = time;
+		target_pdf_aux_pub_.publish(msg_target_pdf_aux) ;
  }
 
  /*
@@ -286,7 +333,7 @@
 	augmented_target_info_vector_.block<4,1>(0,neighbor_ID) = neighbor_target_info_vector; 
 	augmented_target_info_matrix_.block<4,4>(0,4*neighbor_ID) = neighbor_target_info_matrix;
 
-	 if (dekf_mode_) {
+	 if (dekf_enable_) {
 	  	dekf_algorithm_.fuseWithNeighbor(augmented_target_info_vector_, augmented_target_info_matrix_);
 	 }
  }
@@ -298,7 +345,7 @@
 		received_target_range = true;	
 		ROS_INFO("dekf node has received the first range to target"); 	
 	}
-	if (ekf_start_) {	
+	if (ekf_enable_) {	
 		int msg_type = msg.type;
 		if (msg_type == 0)
 		{
@@ -344,8 +391,8 @@
 	vehicle_position_ << msg.position.north - state_offset_vector_[0], msg.position.east - state_offset_vector_[1];
 	
  }
-void DekfNode::smoothTargetState() {
-	 smoothed_target_state_ = 0.9*smoothed_target_state_ + 0.1*internal_target_pdf_.state;
+void DekfNode::smoothTargetState(Eigen::Vector4d current_target_state) {
+	 smoothed_target_state_ = 0.9*smoothed_target_state_ + 0.1*current_target_state;
 } 
 bool DekfNode::checkOutlier(double range) {
 	double a1, a2, b0, threadshod;

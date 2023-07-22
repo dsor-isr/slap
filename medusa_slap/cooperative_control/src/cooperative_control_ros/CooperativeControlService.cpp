@@ -29,15 +29,15 @@ bool CooperativeControlNode::setGainsService(medusa_slap_msg::SetFloat64::Reques
 
 /* Start Service callback */
 bool CooperativeControlNode::startCooperativeControl(medusa_slap_msg::StartStop::Request &req, medusa_slap_msg::StartStop::Response &res) {
-  if (timer_.hasStarted()) {
+  if (cpf_enable_) {
     ROS_INFO("cooperative controller already stated");
   }
   else{
-    timer_.start();
+    cpf_enable_ = true;
     initial_time = ros::Time::now();
     ROS_INFO("just stated cooperative controller");
-    res.success = true;
   }
+  res.success = true;
   return true;
 }
 
@@ -45,12 +45,12 @@ bool CooperativeControlNode::startCooperativeControl(medusa_slap_msg::StartStop:
 bool CooperativeControlNode::stopCooperativeControl(medusa_slap_msg::StartStop::Request &req, medusa_slap_msg::StartStop::Response &res) {
 
   /* Check if the timer was running or not */
-  if (timer_.hasStarted()) {
+  if (cpf_enable_) {
     ROS_INFO("cooperative controller will stop.");
   } else {
     ROS_INFO("cooperative controller was not running.");
   }
-  timer_.stop();
+  cpf_enable_ = false;
   /* Reset cooperative controller*/
   cooperative_control_algorithm_.reset();
     

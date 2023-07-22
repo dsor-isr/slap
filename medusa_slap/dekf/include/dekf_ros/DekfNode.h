@@ -80,13 +80,15 @@
 	ros::Publisher target_pdf_to_neighbor_pub_; 						// publish target probability density function
 	ros::Publisher estimated_target_to_console_pub_;
 	ros::Publisher dekf_etc_info_pub_;
-
+    ros::Publisher target_pdf_absolute_pub_;  
+	ros::Publisher target_pdf_aux_pub_;
 
 	/**
 	 * @brief Services
 	 */
 	ros::ServiceServer start_dekf_srv_ ;
 	ros::ServiceServer stop_dekf_srv_ ;
+	ros::ServiceServer reset_ekf_srv_ ;
 	ros::ServiceServer start_ekf_srv_ ;
 	ros::ServiceServer stop_ekf_srv_ ; 
 	ros::ServiceServer set_target_pdf_srv_ ;
@@ -133,6 +135,7 @@
 
 	bool startEkf(medusa_slap_msg::StartStop::Request &req, medusa_slap_msg::StartStop::Response &res);
 	bool stopEkf(medusa_slap_msg::StartStop::Request &req, medusa_slap_msg::StartStop::Response &res);
+	bool resetEkf(medusa_slap_msg::StartStop::Request &req, medusa_slap_msg::StartStop::Response &res);
 
    	bool setTargetPDF(medusa_slap_msg::SetTargetPDF::Request &req, medusa_slap_msg::SetTargetPDF::Response &res);
 	
@@ -142,11 +145,13 @@
 
 	bool setTargetDepth(medusa_slap_msg::SetFloat64::Request &req, medusa_slap_msg::SetFloat64::Response &res);
 
+
+
 	/**
 	 * @brief auxilary methods
 	 */    
 
-    void smoothTargetState();
+    void smoothTargetState(Eigen::Vector4d current_target_state);
 	bool checkOutlier(double range);
 
 
@@ -186,7 +191,7 @@
 	/**
      * @brief to store target pdf
      */
-    TargetPDF internal_target_pdf_;
+	TargetPDF target_pdf_local_init_;
 	TargetPDF neighbor_target_pdf_;
 
 	/**
@@ -200,8 +205,8 @@
      * @brief store variable start and stop ekf and dekf mode
      */
 
-	bool ekf_start_{false};
-	bool dekf_mode_{false};
+	bool ekf_enable_{false};
+	bool dekf_enable_{false};
 	
 	/**
      * @brief auxilary variables
@@ -212,6 +217,6 @@
 	Eigen::Vector4d smoothed_target_state_;
 	
 	bool tracking_true_target_{false};
-	ros::Time initial_time;
+	ros::Time initial_time = ros::Time::now();
     
 };

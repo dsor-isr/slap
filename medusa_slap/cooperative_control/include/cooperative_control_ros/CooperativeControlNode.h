@@ -28,6 +28,8 @@
  #include <medusa_slap_msg/SetFloat64.h>
  #include <medusa_slap_msg/StartStop.h>
  #include <medusa_slap_msg/ETCInfo.h>
+  #include <medusa_slap_msg/CPFinfo.h>
+
 
  #include <medusa_slap_msg/SetETCParameter.h>
 
@@ -60,7 +62,7 @@
 	
 	/**	Publishers */
  	
-	ros::Publisher vc_pub_;
+	ros::Publisher cpf_info_pub_;
 	ros::Publisher to_neighbor_gamma_pub_;		
 	ros::Publisher cpf_etc_info_pub_;		
 
@@ -118,6 +120,8 @@
 	Eigen::VectorXd gamma_desired_speed_vector_;
 
 	int Veh_ID;
+
+	bool cpf_enable_{false};
 
 	ros::Time initial_time;
 

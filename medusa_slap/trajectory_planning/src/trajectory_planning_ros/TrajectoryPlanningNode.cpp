@@ -28,17 +28,6 @@
   * @brief Destructor
  */
  TrajectoryPlanningNode::~TrajectoryPlanningNode() {
-
- 	// +.+ shutdown publishers
- 	// ---> add publishers here
- 	// Example: uref_pub.shutdown();
- 	 wp_status_timer_pub.shutdown();
-
- 	// +.+ shutdown subscribers
- 	// ---> add subscribers here
- 	// Example: state_sub.shutdown();
- 	flag_sub.shutdown();
-
  	// +.+ stop timer
  //	timer_.stop();
 
@@ -62,10 +51,10 @@
 	//std::string internal_gamma_topic_name =  "/mblack/slap/internal/gamma";
 	std::string internal_gamma_dot_topic_name =  FarolGimmicks::getParameters<std::string>(nh_p_,"topics/subscribers/gamma_dot");
 	// std::string targetPDF_topic_name =  "/mblack/slap/internal/target/pdf"; 
-   	std::string targetPDF_topic_name = FarolGimmicks::getParameters<std::string>(nh_p_, "topics/subscribers/target_pdf");  
+   	std::string targetPDF_absolute_topic_name = FarolGimmicks::getParameters<std::string>(nh_p_, "topics/subscribers/target_pdf_absolute");  
 
 	internal_gamma_dot_sub_ = nh_.subscribe(internal_gamma_dot_topic_name, 10, &TrajectoryPlanningNode::internalGammaDotCallback, this);
-	target_pdf_sub_ = nh_.subscribe(targetPDF_topic_name, 10, &TrajectoryPlanningNode::targetPdfCallback, this);
+	target_pdf_sub_ = nh_.subscribe(targetPDF_absolute_topic_name, 10, &TrajectoryPlanningNode::targetPdfCallback, this);
 
   }
 
@@ -208,7 +197,7 @@ void TrajectoryPlanningNode::internalGammaDotCallback(const std_msgs::Float64& m
 	  st_state_msg.Y = traj_pos[0] + path_pos[0];
       st_state_msg.X = traj_pos[1] + path_pos[1];
       st_state_msg.Z = traj_pos[2] + path_pos[2];
-	  double heading = atan2(traj_vel[1],traj_vel[0])* 180 /M_PI;
+	  double heading = atan2(traj_vel[1] + path_vel_gamma[1], traj_vel[0] + path_vel_gamma[0])* 180 /M_PI;
 	  st_state_msg.Yaw = (int(heading) + 360) % 360;
 	// // //  st_state_msg.Y =  4290841;
     // // //  st_state_msg.X =  491926;

@@ -8,6 +8,7 @@ void DekfNode::initializeServices() {
   /* Get the service names for starting and stoping the path following */
   std::string start_ekf_srv_name = FarolGimmicks::getParameters<std::string>(nh_p_, "topics/services/start_ekf", "/start_ekf");
   std::string stop_ekf_srv_name = FarolGimmicks::getParameters<std::string>(nh_p_, "topics/services/stop_ekf", "/stop_ekf");
+  std::string reset_ekf_srv_name = FarolGimmicks::getParameters<std::string>(nh_p_, "topics/services/reset_ekf", "/reset_ekf");
 
   std::string start_dekf_srv_name = FarolGimmicks::getParameters<std::string>(nh_p_, "topics/services/start_dekf", "/start_dekf");
   std::string stop_dekf_srv_name = FarolGimmicks::getParameters<std::string>(nh_p_, "topics/services/stop_dekf", "/stop_dekf");
@@ -24,9 +25,12 @@ void DekfNode::initializeServices() {
   /* Advertise the services with these names */
   start_dekf_srv_= nh_.advertiseService(start_dekf_srv_name, &DekfNode::startDekf, this);
   stop_dekf_srv_ = nh_.advertiseService(stop_dekf_srv_name, &DekfNode::stopDekf, this);
-  
+
+
   start_ekf_srv_= nh_.advertiseService(start_ekf_srv_name, &DekfNode::startEkf, this);
   stop_ekf_srv_ = nh_.advertiseService(stop_ekf_srv_name, &DekfNode::stopEkf, this);
+  reset_ekf_srv_ = nh_.advertiseService(reset_ekf_srv_name, &DekfNode::resetEkf, this);
+
 
   set_target_pdf_srv_ = nh_.advertiseService(set_target_pdf_srv_name, &DekfNode::setTargetPDF, this);
 
@@ -42,10 +46,10 @@ void DekfNode::initializeServices() {
 /* Start Service callback */
 bool DekfNode::startEkf(medusa_slap_msg::StartStop::Request &req, medusa_slap_msg::StartStop::Response &res) {
     
-  if (ekf_start_) {
+  if (ekf_enable_) {
     ROS_INFO("EKF already started.");
   } else {
-    ekf_start_ = true;
+    ekf_enable_ = true;
     ROS_INFO("Just started EKF.");
     res.success = true;
   }
@@ -56,46 +60,57 @@ bool DekfNode::startEkf(medusa_slap_msg::StartStop::Request &req, medusa_slap_ms
 bool DekfNode::stopEkf(medusa_slap_msg::StartStop::Request &req, medusa_slap_msg::StartStop::Response &res) {
 
   /* Check if the timer was running or not */
-  if (ekf_start_) {
+  if (ekf_enable_) {
     ROS_INFO("Just stoped EKF.");
   } else {
     ROS_INFO("Ekf was not running.");
+      res.success = true;
   }
   /* stop Ekf */
-  ekf_start_ = false;    // 
+  ekf_enable_ = false;    // 
     
-  res.success = true;
   return true;
 }
 
 /* Start Service callback */
 bool DekfNode::startDekf(medusa_slap_msg::StartStop::Request &req, medusa_slap_msg::StartStop::Response &res) {
 
-  if (dekf_mode_) {
+  if (dekf_enable_) {
     ROS_INFO("DEKF mode already started");
   } else {
     ROS_INFO("Just started DEKF mode.");
   //  dekf_algorithm_.setDekfMode(true);  
-    dekf_mode_ = true;
-    initial_time = ros::Time::now();
+    dekf_enable_ = true;
     res.success = true;
+
   }
   return true;
+
 }
 
 /* Stop Service callback */
 bool DekfNode::stopDekf(medusa_slap_msg::StartStop::Request &req, medusa_slap_msg::StartStop::Response &res) {
-  if (!dekf_mode_) {
+  if (!dekf_enable_) {
     ROS_INFO("Was not in DEKF mode");
   } else {
     ROS_INFO("Just stoped DEKF mode.");
   //  dekf_algorithm_.setDekfMode(false);
-    dekf_mode_ = false;
+    dekf_enable_ = false;
     res.success = true;
   }
-  
   return true;
 } 
+
+bool DekfNode::resetEkf(medusa_slap_msg::StartStop::Request &req, medusa_slap_msg::StartStop::Response &res) {
+  dekf_algorithm_.setLocalTargetPDF(target_pdf_local_init_);
+  smoothed_target_state_ =  target_pdf_local_init_.state;
+  res.success = true;
+  ROS_INFO("Reset Target Distribution.");
+
+  return true;
+} 
+
+
 
 bool DekfNode::setTargetPDF(medusa_slap_msg::SetTargetPDF::Request &req, medusa_slap_msg::SetTargetPDF::Response &res){
 
@@ -112,14 +127,16 @@ double var_pos_x = req.var_pos_x;
 double var_pos_y = req.var_pos_y;
 double var_vel_x = req.var_vel_x;
 double var_vel_y = req.var_vel_y;
-internal_target_pdf_.state = relative_state;
 
-internal_target_pdf_.cov.setZero(4,4); 
+TargetPDF target_pdf;
+target_pdf.state = relative_state;
 
-internal_target_pdf_.cov.diagonal() << var_pos_x, var_pos_y, var_vel_x, var_vel_y;
+target_pdf.cov.setZero(4,4); 
+
+target_pdf.cov.diagonal() << var_pos_x, var_pos_y, var_vel_x, var_vel_y;
 
 
-dekf_algorithm_.setInternalTargetPDF(internal_target_pdf_); 			
+dekf_algorithm_.setLocalTargetPDF(target_pdf); 			
 
 res.success = true;
 
