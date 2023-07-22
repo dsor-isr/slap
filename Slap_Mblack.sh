@@ -143,9 +143,8 @@ then
   echo "Reset desired speed profile for gamma to 0.03rad/s"
   rosservice call /mblack0/slap/set_gamma "data: 0.0" 
   echo "Reset gamma to 0"
-  rosservice call /mblack0/slap/set_target_pdf "{pos_x: 10.0, pos_y: -5.0, vel_x: 0.0, vel_y: 0.0, var_pos_x: 10.0, var_pos_y: 10.0, var_vel_x: 0.01,
-    var_vel_y: 0.01}"
-  echo "Reset target pdf to default orignal value"    
+  rosservice call /mblack0/slap/reset_ekf 
+
 fi
 
 if [ $mode == set_formation ]
