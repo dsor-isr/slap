@@ -140,7 +140,7 @@ dekf_algorithm_.setLocalTargetPDF(target_pdf);
 
 res.success = true;
 
-ROS_INFO("Reset the target pdf to the default setting");
+ROS_INFO(" Set target PDF successfully");
 
 return true;
 }

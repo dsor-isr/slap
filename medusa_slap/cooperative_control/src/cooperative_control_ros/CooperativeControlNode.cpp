@@ -142,40 +142,40 @@ void CooperativeControlNode::timerIterCallback(const ros::TimerEvent &event) {
 		// std::cout << "gamma vector_:" << gamma_vector_ << std::endl;
 		// std::cout << "gamma desired speed vector_:" << gamma_desired_speed_vector_ << std::endl;
 	double time = abs((ros::Time::now()- initial_time).toSec());
-
-	cooperative_control_algorithm_.updateGammaVector(gamma_vector_);
-	cooperative_control_algorithm_.updateGammaDesiredSpeedVector(gamma_desired_speed_vector_);
-	 if (received_internal_gamma && received_neighbor_gamma){	 
- 	/* Update internal and neighbor gamma */
-		// cooperative_control_algorithm_.updateInternalGamma(internal_gamma_);
-		// cooperative_control_algorithm_.updateNeighborGamma(neighbor_gamma_);
-
-	/* Call cooperative controller */
-		cooperative_control_algorithm_.callCooperativeController(0.1);
-	/* Get the correction speed to be published */
-		vc_ = cooperative_control_algorithm_.getCorrectionSpeed();
-
-	 } 
-	 else
-	 {
-		 		vc_ = 0;
-	 }
-
-	/* Publish vc */
-   	   medusa_slap_msg::CPFinfo msg_cpf_info;
-	   msg_cpf_info.time = time;
-	   msg_cpf_info.cpf_enable = cpf_enable_;
-	   msg_cpf_info.vc = vc_;
-	   msg_cpf_info.time = time;
-	   
-	   cpf_info_pub_.publish(msg_cpf_info);
-
-
 	/* Broadcast the latest internal gamma to neighboring vehicle, this depends on triggering mechanism */
 
 	// std::cout << "current time:" << time << std::endl;
 	if (cpf_enable_)
 	{
+
+		cooperative_control_algorithm_.updateGammaVector(gamma_vector_);
+			cooperative_control_algorithm_.updateGammaDesiredSpeedVector(gamma_desired_speed_vector_);
+			if (received_internal_gamma && received_neighbor_gamma){	 
+			/* Update internal and neighbor gamma */
+				// cooperative_control_algorithm_.updateInternalGamma(internal_gamma_);
+				// cooperative_control_algorithm_.updateNeighborGamma(neighbor_gamma_);
+
+			/* Call cooperative controller */
+				cooperative_control_algorithm_.callCooperativeController(0.1);
+			/* Get the correction speed to be published */
+				vc_ = cooperative_control_algorithm_.getCorrectionSpeed();
+
+			} 
+			else
+			{
+						vc_ = 0;
+			}
+
+			/* Publish vc */
+			medusa_slap_msg::CPFinfo msg_cpf_info;
+			msg_cpf_info.time = time;
+			msg_cpf_info.cpf_enable = cpf_enable_;
+			msg_cpf_info.vc = vc_;
+			msg_cpf_info.time = time;
+			
+			cpf_info_pub_.publish(msg_cpf_info);
+
+
 		EtcInfo etc_info_ = cooperative_control_algorithm_.checkBroadcastSignal(time);
 		medusa_slap_msg::ETCInfo msg_cpf_etc;
 		msg_cpf_etc.broadcast_signal = etc_info_.broadcast_signal;
