@@ -174,27 +174,30 @@ void CooperativeControlNode::timerIterCallback(const ros::TimerEvent &event) {
 	/* Broadcast the latest internal gamma to neighboring vehicle, this depends on triggering mechanism */
 
 	// std::cout << "current time:" << time << std::endl;
-	EtcInfo etc_info_ = cooperative_control_algorithm_.checkBroadcastSignal(time);
-	medusa_slap_msg::ETCInfo msg_cpf_etc;
-	msg_cpf_etc.broadcast_signal = etc_info_.broadcast_signal;
-	msg_cpf_etc.threshold = etc_info_.threshold;
-	msg_cpf_etc.error = etc_info_.est_error;
-	msg_cpf_etc.time  = time;
-	cpf_etc_info_pub_.publish(msg_cpf_etc);
-	// std::cout << "current time next:" << time << std::endl;
+	if (cpf_enable_)
+	{
+		EtcInfo etc_info_ = cooperative_control_algorithm_.checkBroadcastSignal(time);
+		medusa_slap_msg::ETCInfo msg_cpf_etc;
+		msg_cpf_etc.broadcast_signal = etc_info_.broadcast_signal;
+		msg_cpf_etc.threshold = etc_info_.threshold;
+		msg_cpf_etc.error = etc_info_.est_error;
+		msg_cpf_etc.time  = time;
+		cpf_etc_info_pub_.publish(msg_cpf_etc);
+		// std::cout << "current time next:" << time << std::endl;
 
-	if(etc_info_.broadcast_signal) {
-			/* publish the latest internal gamma to the network */
-			farol_msgs::CPFGamma msg;
+		if(etc_info_.broadcast_signal) {
+				/* publish the latest internal gamma to the network */
+				farol_msgs::CPFGamma msg;
 
-			msg.header.seq = seq_;
-			seq_++;
-			msg.header.stamp = ros::Time::now();
-			msg.header.frame_id = "";
-			msg.gamma = internal_gamma_; 
-			msg.vd = internal_gamma_desired_speed_; 
-			to_neighbor_gamma_pub_.publish(msg);
- 	}	
+				msg.header.seq = seq_;
+				seq_++;
+				msg.header.stamp = ros::Time::now();
+				msg.header.frame_id = "";
+				msg.gamma = internal_gamma_; 
+				msg.vd = internal_gamma_desired_speed_; 
+				to_neighbor_gamma_pub_.publish(msg);
+		}
+	}	
  }
  /*
 #######################################################################################################################

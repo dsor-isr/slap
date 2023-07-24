@@ -123,6 +123,6 @@
 
 	bool cpf_enable_{false};
 
-	ros::Time initial_time;
+	ros::Time initial_time = ros::Time::now();
 
 };
