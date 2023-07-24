@@ -15,6 +15,7 @@
  <depend>std_msgs</depend>
  <depend>roscpp</depend>
  <depend>farol_msgs</depend>
+ <depend>medusa_slap_msg</depend>
 
  <!-- Medusa Gimmicks is used for parameter loading -->
  <depend>farol_gimmicks_library</depend>
@@ -25,5 +26,6 @@
  <!-- Libraries to generate the messages -->
   <build_depend>message_generation</build_depend>
   <exec_depend>message_runtime</exec_depend>
+
 
 </package>

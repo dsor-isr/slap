@@ -21,4 +21,6 @@
  
  <depend>farol_gimmicks_library</depend>
 
+ <depend>medusa_slap_msg</depend>
+
 </package>
