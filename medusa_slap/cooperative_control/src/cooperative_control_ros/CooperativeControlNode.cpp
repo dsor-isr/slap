@@ -166,16 +166,6 @@ void CooperativeControlNode::timerIterCallback(const ros::TimerEvent &event) {
 						vc_ = 0;
 			}
 
-			/* Publish vc */
-			medusa_slap_msg::CPFinfo msg_cpf_info;
-			msg_cpf_info.time = time;
-			msg_cpf_info.cpf_enable = cpf_enable_;
-			msg_cpf_info.vc = vc_;
-			msg_cpf_info.time = time;
-			
-			cpf_info_pub_.publish(msg_cpf_info);
-
-
 		EtcInfo etc_info_ = cooperative_control_algorithm_.checkBroadcastSignal(time);
 		medusa_slap_msg::ETCInfo msg_cpf_etc;
 		msg_cpf_etc.broadcast_signal = etc_info_.broadcast_signal;
@@ -198,6 +188,18 @@ void CooperativeControlNode::timerIterCallback(const ros::TimerEvent &event) {
 				to_neighbor_gamma_pub_.publish(msg);
 		}
 	}	
+	else
+	{
+		vc_ = 0;
+	}
+	
+	/* Publish vc */
+	medusa_slap_msg::CPFinfo msg_cpf_info;
+	msg_cpf_info.cpf_enable = cpf_enable_;
+	msg_cpf_info.vc = vc_;
+	msg_cpf_info.time = time;
+	
+	cpf_info_pub_.publish(msg_cpf_info);
  }
  /*
 #######################################################################################################################
