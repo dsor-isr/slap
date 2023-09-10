@@ -349,7 +349,7 @@
 		int msg_type = msg.type;
 		if (msg_type == 0)
 		{
-			if (checkOutlier(range_)){
+			if (checkOutlier(range_) || (range_ <= 0) ){
 				ROS_INFO("measured range is outlier, discarded"); 					// a navier way to reject outliner (for test only), not standard method
 			}
 			else{
