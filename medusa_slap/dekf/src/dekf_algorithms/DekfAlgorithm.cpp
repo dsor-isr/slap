@@ -129,12 +129,17 @@ void DekfAlgorithm::setTargetDepth(double target_depth){
 }
 
 void DekfAlgorithm::localCorrection(double range, Eigen::Vector2d vehicle_position){
-    // std::cout << " Before Local correction target state" << target_pdf_.state << std::endl;
+    // s]td::cout << " Before Local correction target state" << target_pdf_.state << std::endl;
 	// std::cout << "Before Local correction target cov" << target_pdf_.cov << std::endl;
 	// std::cout << "Before Local correction target info vector" << target_pdf_.info_vector << std::endl;
 	// std::cout << "Before Local correction target info matrix" << target_pdf_.info_matrix << std::endl;
 //		std::cout << " local correction" << std::endl; 
-	    ROS_INFO("target depth is: %f", target_depth_);
+	    // ROS_INFO("target depth is: %f", target_depth_);
+
+	    
+		// just used for restoration 
+		TargetPDF target_pdf_backup = target_pdf_;
+        // 
 
 		Eigen::Vector2d target_position_hat_;
 		Eigen::MatrixXd C_(1,4); 
@@ -159,7 +164,14 @@ void DekfAlgorithm::localCorrection(double range, Eigen::Vector2d vehicle_positi
 		// target_pdf_.cov = target_pdf_.info_matrix.inverse();	
 		target_pdf_.state = target_pdf_.info_matrix.inverse()*target_pdf_.info_vector;
 
+		// discard result of this step if someting wrong (could be due to bad range or numerical computation related to the inverse operation)
+        if (isnan(target_pdf_.state(1)))
+		{
+			ROS_INFO("SLAP EKF: measurement has a problem");
+			target_pdf_ = target_pdf_backup;
+		}
 
+        
 	// std::cout << "Local correction target state" << target_pdf_.state << std::endl;
 	// std::cout << "Local correction target cov" << target_pdf_.cov << std::endl;
 	// std::cout << "Local correction target info vector" << target_pdf_.info_vector << std::endl;
@@ -169,15 +181,31 @@ void DekfAlgorithm::localCorrection(double range, Eigen::Vector2d vehicle_positi
 }
 void DekfAlgorithm::localPrediction(){
 //	std::cout << "local prediction" << std::endl;  
-	target_pdf_.state = F_*target_pdf_.state;
-	target_pdf_.info_matrix =  W_ - W_*F_*(target_pdf_.info_matrix + F_.transpose()*W_*F_).inverse()*F_.transpose()*W_;
-    
-    target_pdf_.info_vector = target_pdf_.info_matrix*target_pdf_.state;
+
+	// just used for restoration 
+		TargetPDF target_pdf_backup = target_pdf_;
+    // 
+     
+	target_pdf_.state         = F_*target_pdf_.state;
+    target_pdf_.info_matrix   =  W_ - W_*F_*(target_pdf_.info_matrix + F_.transpose()*W_*F_).inverse()*F_.transpose()*W_;
+    target_pdf_.info_vector   = target_pdf_.info_matrix*target_pdf_.state;
+
+    if (isnan(target_pdf_.info_vector(1)))
+		{
+			ROS_INFO("SLAP EKF: local prediction has a problem");
+			target_pdf_ = target_pdf_backup;
+		}
+	
 	// target_pdf_.cov = target_pdf_.info_matrix.inverse();	
 }
 void DekfAlgorithm::fuseWithNeighbor(Eigen::MatrixXd augmented_target_info_vector, Eigen::MatrixXd augmented_target_info_matrix){
 	
 //	std::cout << "fuse with neighbor" << std::endl;  
+
+	// just used for restoration 
+		TargetPDF target_pdf_backup = target_pdf_;
+    // 
+     
 
 	Eigen::Vector4d sum_target_info_vector_;
 	Eigen::Matrix4d sum_target_info_matrix_;
@@ -211,6 +239,12 @@ void DekfAlgorithm::fuseWithNeighbor(Eigen::MatrixXd augmented_target_info_vecto
 	target_pdf_.info_matrix = sum_target_info_matrix_;
 
 	target_pdf_.state = target_pdf_.info_matrix.inverse()*target_pdf_.info_vector;
+
+	    if (isnan(target_pdf_.state (1)))
+		{
+			ROS_INFO("SLAP EKF: fusion with neighbor has problem");
+			target_pdf_ = target_pdf_backup;
+		}
 }
 void DekfAlgorithm::setMatricesWV(Eigen::MatrixXd Q, Eigen::MatrixXd R){
    
