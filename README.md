@@ -1,9 +1,9 @@
 # SLAP (Simultaneous Localization And Pursuit)
-This repository holds the code stack for the SLAP algorithm.
+This repository contains the ROS code USED to generate the results in the paper entitled **Target localization and pursuit with networked robotic vehicles: theory and experiments**.
 In order to test the SLAP algorithm in a simulation environment with autonomous underwater vehicles (AUVs), please refer to the [SLAP Simulation](https://github.com/dsor-isr/slap_simulation) repository.
 
 ### Reference
-If you find the code useful and would like to cite it, please reference to the following paper:
+If you find the code useful and would like to cite it, please REFERENCE the following paper:
 
 **Target localization and pursuit with networked robotic vehicles: theory and experiments**, 
 
